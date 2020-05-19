@@ -1,0 +1,30 @@
+
+body {
+    background-color: rgb(63, 60, 60);
+}
+
+h1 {
+    color: rgb(76, 111, 167);
+    margin-left: 20px;
+}
+
+h2 {
+    color: rgb(194, 146, 69);
+    margin-left: 20px;
+
+}
+
+p {
+    color: rgb(194, 194, 69);
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+li {
+    color: rgb(194, 194, 69);
+    margin-left: 20px;
+}
+
+hr {
+    border-color: green;
+}
