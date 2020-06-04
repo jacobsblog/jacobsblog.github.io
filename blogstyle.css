@@ -16,7 +16,9 @@ h2 {
 }
 
 h3 {
+    color: rgb(76, 111, 167);
     margin-left: 20px;
+    text-shadow: 2px 2px black;
 }
 
 p {
