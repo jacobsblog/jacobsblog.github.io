@@ -30,6 +30,41 @@ struct Book {
     int placeInSeries;
 };
 
+bool operator == (const Book & lhs, const Book & rhs) 
+{
+    if(lhs.authorGiven == rhs.authorGiven &&
+       lhs.authorSurname == rhs.authorSurname &&
+       lhs.title == rhs.title)
+       return true;
+    return false;
+}
+
+bool operator != (const Book & lhs, const Book & rhs) 
+{
+    return !(lhs == rhs);
+}
+
+bool operator < (const Book & lhs, const Book & rhs)
+{
+    if (lhs.authorSurname != rhs.authorSurname)
+        return lhs.authorSurname < rhs.authorSurname;
+    if (lhs.authorGiven != rhs.authorGiven)
+        return lhs.authorGiven < rhs.authorGiven;
+    
+    if (lhs.inSeries && rhs.inSeries)
+    {
+        if (lhs.series != rhs.series)
+            return lhs.series < rhs.series;
+        return lhs.placeInSeries < rhs.placeInSeries;
+    }
+    else if (lhs.inSeries || rhs.inSeries)
+        return lhs.inSeries < rhs.inSeries;
+    else
+        return lhs.title < rhs.title;
+}
+
+Book noBook;
+
 vector<Book> library;
 
 /*
@@ -57,7 +92,7 @@ string getBook(Book entry) {
         fullEntry += ", ";
         fullEntry += entry.series;
         fullEntry += " ";
-        fullEntry += entry.placeInSeries;
+        fullEntry += to_string(entry.placeInSeries);
     }
     return fullEntry;
 }
@@ -74,34 +109,47 @@ Book enterBook() {
     //Get Author
     cout << "Author Surname: ";
     cin >> newBook.authorSurname;
-    cin.clear();
 
     cout << "Author Given Names: ";
+
+    cin.ignore();
     getline(cin, newBook.authorGiven);
-    cin.clear();
 
     //Get title
     cout << "Title: ";
+    
     getline(cin, newBook.title);
-    cin.clear();
 
     //Get series
     cout << "Series Placement: ";
     cin >> newBook.placeInSeries;
-    cin.clear();
     newBook.inSeries = newBook.placeInSeries;
 
     if (newBook.inSeries) {
         cout << "Series Name: ";
+        cin.ignore();
         getline(cin, newBook.series);
-        cin.clear();
     }
 
+    vector<Book>::iterator it;
+    it = find(library.begin(), library.end(), newBook);
+    if (it != library.end()){
+        displayBook(newBook);
+        cout << "is already saved in the library\n";
+        return noBook;
+    }
     cout << "About to save:\n";
     displayBook(newBook);
     cout << "Are you sure (y/n): ";
     cin >> confirm;
-    cin.clear();
+    if (confirm == 'n')
+    {
+        cout << "try again? (y/n): ";
+        cin >> confirm;
+        if (confirm == 'n')
+            return noBook;
+        confirm++;    
+    }
 
     } while (confirm != 'y');
 
@@ -118,6 +166,7 @@ void writeToHTML() {
     htmlOut << endl;
 
     //SORT VECTOR HERE
+    sort(library.begin(), library.end());
 
     for (auto it = library.begin(); it < library.end(); it++) {
         htmlOut << "<li> " << getBook(*it) << " </li>" << endl;
@@ -136,6 +185,7 @@ void writeToSave() {
     assert(!saveOut.fail());
 
     //SORT VECTOR HERE
+    sort(library.begin(), library.end());
 
     for(auto it = library.begin(); it < library.end(); it++) {
         saveOut << it->authorSurname << "|" << it->authorGiven << "|"
@@ -147,12 +197,15 @@ void writeToSave() {
 }
 
 void readSaved() {
+    cout << "Reading Saved Data\n";
     ifstream savedIn("./library/library.txt");
     if(savedIn.fail()) {
         cout << "No saved data found.\n";
         return;
     }
 
+    cout << "Found ";
+    bool stop = 0;
     while(!savedIn.eof()) {
         string savedEntry;
         Book entry;
@@ -161,6 +214,8 @@ void readSaved() {
 
         entryVector = split(savedEntry, '|');
         
+        stop = entryVector.empty();
+        if (!stop){
         entry.authorSurname = entryVector[0];
         entry.authorGiven   = entryVector[1];
         entry.title         = entryVector[2];
@@ -174,7 +229,9 @@ void readSaved() {
             entry.inSeries = 0;
 
         library.push_back(entry);
+        }
     }
+    cout << library.size() << " books.\n";
 }
 
 void displayPrompt() {
@@ -186,19 +243,27 @@ void displayPrompt() {
 
 int main()
 {
-    //readSaved();
+    noBook.authorSurname = "NULL";
+    noBook.authorGiven   = "NULL";
+    noBook.title         = "NULL";
+    readSaved();
     char prompt;
     displayPrompt(); 
     do
     {
         cout << ">" ;
         cin >> prompt;
-        cin.clear();
         prompt = toupper(prompt);
+        Book newBook;
         switch (prompt)
         {
         case 'N':
-            library.push_back(enterBook());
+            cout << endl;
+            newBook = enterBook();
+            if (newBook != noBook)
+                library.push_back(newBook);
+            cout << endl;
+            displayPrompt();
             break;
         case 'W':
             writeToHTML();
@@ -208,8 +273,10 @@ int main()
             break;
         case 'Q':
             writeToSave();
+            writeToHTML();
             break;
         default:
+            cout << "Invalid Input\n";
             break;
         }
     }while(prompt != 'Q');
