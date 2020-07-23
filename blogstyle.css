@@ -1,43 +1,45 @@
 body {
-    background-color: rgb(63, 60, 60);
+    background-color: #282828;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 h1 {
-    color: rgb(76, 111, 167);
+    color: #458588;
     margin-left: 20px;
     text-shadow: 2px 2px black;
 }
 
 h2 {
-    color: rgb(194, 146, 69);
+    color: #d79921;
     margin-left: 20px;
     text-shadow: 2px 2px black;
 
 }
 
 h3 {
-    color: rgb(76, 111, 167);
+    color: #98971a;
     margin-left: 20px;
     text-shadow: 2px 2px black;
 }
 
 p {
-    color: rgb(194, 194, 69);
+    color: #a89984;
     margin-left: 20px;
     margin-right: 20px;
 }
 
 li {
-    color: rgb(69, 175, 194);
+    color: #b16286;
     margin-left: 20px;
 }
 
 hr {
-    border-color: green;
+    border-color: #cc241d;
+
 }
 
 a {
-    color: rgb(47, 87, 47);
-    text-shadow: 2px 2px black;
+    color: #689d6a;
+    /* text-shadow: 2px 2px black; */
 
 }
